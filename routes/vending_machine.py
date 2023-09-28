@@ -145,3 +145,15 @@ async def remove_product_from_vending_machine(vending_machine_id: str, product_i
     except Exception as e:
         logger.error(f"Error removing product from vending machine: {e}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error")
+
+
+@router.get("_by_product/{product_id}")
+async def get_vending_machines_by_product(product_id: str):
+    try:
+        vending_machines = db.session.query(ModelVendingMachine).filter(
+            ModelVendingMachine.products.any(product_id=product_id)
+        ).all()
+        return vending_machines
+    except Exception as e:
+        logger.error(f"Error fetching vending machines by product: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error")
